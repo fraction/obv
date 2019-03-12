@@ -136,7 +136,7 @@ module.exports = function (observable) {
     o(function (_value, rm) {
       t.equal(_value, value)
       secondCalled += 1
-      //rm()
+      rm()
     })
 
     t.equal(firstCalled, 0)
@@ -171,7 +171,6 @@ module.exports = function (observable) {
       secondCalled += 1
     })
 
-    //set (fn, false)
     t.equal(firstCalled, 0)
     t.equal(secondCalled, 1)
 
@@ -230,8 +229,6 @@ module.exports = function (observable) {
       if(last2) t.ok(v > last2, 'monotonic increasing listeners')
       last2 = v
     })
-
-
 
     o.set(checked)
 
@@ -293,7 +290,4 @@ module.exports = function (observable) {
 }
 
 if(!module.parent) module.exports (require('../'))
-
-
-
 

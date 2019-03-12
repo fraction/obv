@@ -1,15 +1,18 @@
 
 module.exports = function (filter) {
   var value = null, listeners = [], oncers = []
+
   function trigger (_value) {
-    function rm () { //manually remove...
-      listeners.splice(i, 1)
-    }
+    const isUnchanged = () => value === _value
+    const rm = () => listeners[i] = null
 
     value = _value
     var length = listeners.length
-    for(var i = 0; i< length && value === _value; i++) {
-      listeners[i](value, rm)
+    for(var i = 0; i< length && isUnchanged(); i++) {
+      const ready = listeners[i]
+      if (typeof ready === 'function') {
+        ready(value, rm)
+      }
       //if we remove a listener, must decrement i also
     }
     // decrement from length, incase a !immediately
@@ -17,7 +20,7 @@ module.exports = function (filter) {
     var l = oncers.length
     var _oncers = oncers
     oncers = []
-    while(l-- && _value === value) {
+    while(l-- && isUnchanged()) {
       _oncers.shift()(value)
     }
   }
@@ -25,9 +28,10 @@ module.exports = function (filter) {
   function many (ready, immediately) {
     function rm () { //manually remove...
       //fast path, will happen if an earlier listener has not been removed.
-      if(listeners[i] !== ready)
+      if(listeners[i] !== ready) {
         i = listeners.indexOf(ready)
-      listeners.splice(i, 1)
+      }
+      listeners[i] = null
     }
 
     var i = listeners.push(ready) - 1
