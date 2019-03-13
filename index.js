@@ -1,15 +1,16 @@
-
 module.exports = function (filter) {
   var value = null, listeners = [], oncers = []
 
   function trigger (_value) {
     const isUnchanged = () => value === _value
-    const rm = () => listeners[i] = null
+    const rm = () => listeners.splice(i, 1)
+    const listenersClone = [...listeners]
 
     value = _value
-    var length = listeners.length
+    var length = listenersClone.length
+
     for(var i = 0; i< length && isUnchanged(); i++) {
-      const ready = listeners[i]
+      const ready = listenersClone[i]
       if (typeof ready === 'function') {
         ready(value, rm)
       }
@@ -31,7 +32,7 @@ module.exports = function (filter) {
       if(listeners[i] !== ready) {
         i = listeners.indexOf(ready)
       }
-      listeners[i] = null
+      listeners.splice(i, 1)
     }
 
     var i = listeners.push(ready) - 1
