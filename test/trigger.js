@@ -105,6 +105,7 @@ module.exports = function (observable) {
     o(function (_value, rm) {
       t.equal(_value, value)
       secondCalled += 1
+      rm()
     })
 
     t.equal(firstCalled, 1)
@@ -113,7 +114,7 @@ module.exports = function (observable) {
     o.set(value)
 
     t.equal(firstCalled, 1)
-    t.equal(secondCalled, 2)
+    t.equal(secondCalled, 1)
 
     t.end()
   })
@@ -136,7 +137,6 @@ module.exports = function (observable) {
     o(function (_value, rm) {
       t.equal(_value, value)
       secondCalled += 1
-      //rm()
     })
 
     t.equal(firstCalled, 0)
@@ -145,7 +145,7 @@ module.exports = function (observable) {
     o.set(value)
 
     t.equal(firstCalled, 1)
-    t.equal(secondCalled, 1)
+    t.equal(secondCalled, 2)
 
     t.end()
   })
@@ -171,7 +171,6 @@ module.exports = function (observable) {
       secondCalled += 1
     })
 
-    //set (fn, false)
     t.equal(firstCalled, 0)
     t.equal(secondCalled, 1)
 
@@ -288,6 +287,39 @@ module.exports = function (observable) {
     t.equal(fired, 1)
     o.set(2)
     t.equal(fired, 2)
+    t.end()
+  })
+
+  tape('ensure that filter works correctly', function (t) {
+    var o = observable((a, b) => b > 1)
+    var value = Math.random(), checked = 0
+
+    var rm = o(function (_value) {
+      checked ++
+      t.equal(_value, value)
+    })
+
+
+    t.equal(checked, 0)
+
+    // value is < 1, should not trigger listener
+    o.set(value)
+
+    t.equal(checked, 0)
+
+    value += 1
+
+    // value is > 1, this *should* trigger listener
+    o.set(value)
+
+    t.equal(checked, 1)
+    t.ok(rm)
+
+    rm()
+
+    o.set(Math.random() + 1)
+
+    t.equal(checked, 1)
     t.end()
   })
 }
